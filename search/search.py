@@ -17,15 +17,20 @@ def scrape_worshiptoday(query):
     results = soup.find_all(class_="search-result")
 
     if not results:
+        print("No results.")
         return
     
+    songs = []
     for result in results:
-        title = result.find("h3", class_="results-topic")
-        result.title = title
-        link = title.a["href"]
-        result.link = "https://worshiptoday.dk" + link
+        header = result.find("h3", class_="results-topic")
+        title = header.get_text()
+        path = header.a["href"]
+        url = f"https://worshiptoday.dk{path}"
+        
+        song = {"title": title, "url": url}
+        songs.append(song)
     
-    return results
+    return songs
 
 def scrape_lovsang(query):
     url = "https://lovsang.dk/sange.php?all"
@@ -51,7 +56,13 @@ def scrape_lovsang(query):
 
     results = soup.find_all(class_="songinfo")
 
+    songs = []
     for result in results:
-        result.title = result.span.get_text()
+        title = result.span.get_text()
         id = result.parent["ref"]
-        result.link = "https://lovsang.dk/song/view.php?song_id=" + id
+        url = f"https://lovsang.dk/song/view.php?song_id={id}"
+
+        song = {"title": title, "url": url}
+        songs.append(song)
+    
+    return songs
