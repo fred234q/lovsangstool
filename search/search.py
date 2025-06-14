@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import requests
 import time
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 query = input("Query: ")
 
@@ -66,3 +68,18 @@ def scrape_lovsang(query):
         songs.append(song)
     
     return songs
+
+def metasearch(query):
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query)
+    song_titles = [song["title"] for song in songs]
+    scores = process.extract(query, song_titles, limit=5)
+
+    results = []
+    for title, score in scores:
+        for song in songs:
+            if song["title"] == title:
+                song["score"] = score
+                results.append(song)
+                break
+    
+    return results
