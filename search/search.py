@@ -86,8 +86,28 @@ def scrape_stillestunder():
     
     return songs
 
+def scrape_nodebasen(query):
+    base_url = f"https://nodebasen.dk/?s={query}&id=169&post_type=product"
+
+    r = requests.get(base_url)
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    results = soup.find_all("h3", class_="t-entry-title h3 font-weight-500 title-scale")
+    # Remove duplicates
+    results = results[:len(results) // 2]
+
+    songs = []
+    for result in results:
+        title = result.a.get_text()
+        url = result.a["href"]
+
+        song = {"title": title, "url": url}
+        songs.append(song)
+
+    return songs
+
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder()
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query)
     song_titles = [song["title"] for song in songs]
     scores = process.extract(query, song_titles, limit=len(song_titles))
 
