@@ -1,0 +1,17 @@
+{% extends "search/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1>Lovsangsfinderen</h1>
+    <form id="search-form" action="{% url 'search' %}">
+        <input id="search-field" name="q"></textarea>
+        <input type="submit" value="Søg">
+    </form>
+    <div id="results">
+        <ul>
+            {% for result in results %}
+                <li><a href="{{ result.url }}">{{ result.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
