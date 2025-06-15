@@ -10,7 +10,7 @@
     <div id="results">
         <ul>
             {% for result in results %}
-                <li><a href="{{ result.url }}">{{ result.title }}</a></li>
+                <li><a href="{{ result.url }}">{{ result.title }}</a> ({{ result.source }})</li>
             {% endfor %}
         </ul>
     </div>

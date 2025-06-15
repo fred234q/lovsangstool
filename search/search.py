@@ -76,10 +76,10 @@ def scrape_stillestunder():
 
     songs = []
     for result, url in zip(results, urls):
-        if not url:
-            continue
         title = result.div.div.h1.get_text()
         path = url["href"]
+        if not path:
+            continue
         song_url = f"https://www.stillestunder.com{path}"
         song = {"title": title, "url": song_url, "source": "Stille Stunder"}
         songs.append(song)
@@ -106,10 +106,29 @@ def scrape_nodebasen(query):
 
     return songs
 
+def scrape_tfkmedia(query):
+    base_url = f"https://tfkmedia.dk/?s={query}"
+
+    r = requests.get(base_url)
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    results = soup.find_all(class_="entry-title")
+    print(results)
+
+    songs = []
+    for result in results:
+        title = result.a.get_text()
+        url = result.a["href"]
+
+        song = {"title": title, "url": url, "source": "TFK Media"}
+        songs.append(song)
+
+    return songs
+
 def metasearch(query):
     songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query)
     song_titles = [song["title"] for song in songs]
-    scores = process.extract(query, song_titles, limit=len(song_titles))
+    scores = process.extract(query, song_titles, limit=10)
 
     results = []
     for title, score in scores:
