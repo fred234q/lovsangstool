@@ -71,15 +71,8 @@ def scrape_stillestunder():
 
     results = soup.find_all(class_="sqs-block html-block sqs-block-html")
     results = results[1:len(results) - 1]
-
-    titles = []
-    for result in results:
-        title = result.div.div.h1.get_text()
-        titles.append(title)
     
     urls = soup.find_all(class_="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element")
-    # for url in urls:
-    #     url = url["href"]
 
     songs = []
     for result, url in zip(results, urls):
