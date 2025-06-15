@@ -23,7 +23,7 @@ def scrape_worshiptoday(query):
         path = header.a["href"]
         url = f"https://worshiptoday.dk{path}"
         
-        song = {"title": title, "url": url}
+        song = {"title": title, "url": url, "source": "WorshipToday"}
         songs.append(song)
     
     return songs
@@ -58,7 +58,7 @@ def scrape_lovsang(query):
         id = result.parent["ref"]
         url = f"https://lovsang.dk/song/view.php?song_id={id}"
 
-        song = {"title": title, "url": url}
+        song = {"title": title, "url": url, "source": "lovsang.dk"}
         songs.append(song)
     
     return songs
@@ -81,7 +81,7 @@ def scrape_stillestunder():
         title = result.div.div.h1.get_text()
         path = url["href"]
         song_url = f"https://www.stillestunder.com{path}"
-        song = {"title": title, "url": song_url}
+        song = {"title": title, "url": song_url, "source": "Stille Stunder"}
         songs.append(song)
     
     return songs
@@ -101,7 +101,7 @@ def scrape_nodebasen(query):
         title = result.a.get_text()
         url = result.a["href"]
 
-        song = {"title": title, "url": url}
+        song = {"title": title, "url": url, "source": "nodebasen.dk"}
         songs.append(song)
 
     return songs
