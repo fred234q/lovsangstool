@@ -7,8 +7,6 @@ import time
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
-query = input("Query: ")
-
 def scrape_worshiptoday(query):
     base_url = "https://worshiptoday.dk/soeg"
     params = {"q": query}
@@ -17,10 +15,6 @@ def scrape_worshiptoday(query):
     soup = BeautifulSoup(r.text, "html.parser")
 
     results = soup.find_all(class_="search-result")
-
-    if not results:
-        print("No results.")
-        return
     
     songs = []
     for result in results:
@@ -69,10 +63,40 @@ def scrape_lovsang(query):
     
     return songs
 
+def scrape_stillestunder():
+    site_url = "https://www.stillestunder.com/tekst-og-akkorder"
+
+    r = requests.get(site_url)
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    results = soup.find_all(class_="sqs-block html-block sqs-block-html")
+    results = results[1:len(results) - 1]
+
+    titles = []
+    for result in results:
+        title = result.div.div.h1.get_text()
+        titles.append(title)
+    
+    urls = soup.find_all(class_="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element")
+    # for url in urls:
+    #     url = url["href"]
+
+    songs = []
+    for result, url in zip(results, urls):
+        if not url:
+            continue
+        title = result.div.div.h1.get_text()
+        path = url["href"]
+        song_url = f"https://www.stillestunder.com{path}"
+        song = {"title": title, "url": song_url}
+        songs.append(song)
+    
+    return songs
+
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query)
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder()
     song_titles = [song["title"] for song in songs]
-    scores = process.extract(query, song_titles, limit=5)
+    scores = process.extract(query, song_titles, limit=len(song_titles))
 
     results = []
     for title, score in scores:
