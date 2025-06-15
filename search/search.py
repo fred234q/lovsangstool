@@ -29,13 +29,13 @@ def scrape_worshiptoday(query):
     return songs
 
 def scrape_lovsang(query):
-    url = "https://lovsang.dk/sange.php?all"
+    base_url = "https://lovsang.dk/sange.php?all"
 
     # https://stackoverflow.com/a/60627463
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
-    driver.get(url)
+    driver.get(base_url)
 
     # Close pop-ups
     driver.find_element(By.CSS_SELECTOR, "button.fc-button").click()
@@ -64,9 +64,9 @@ def scrape_lovsang(query):
     return songs
 
 def scrape_stillestunder():
-    site_url = "https://www.stillestunder.com/tekst-og-akkorder"
+    base_url = "https://www.stillestunder.com/tekst-og-akkorder"
 
-    r = requests.get(site_url)
+    r = requests.get(base_url)
     soup = BeautifulSoup(r.text, "html.parser")
 
     results = soup.find_all(class_="sqs-block html-block sqs-block-html")
