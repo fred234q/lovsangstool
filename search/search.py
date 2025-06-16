@@ -118,7 +118,6 @@ def scrape_tfkmedia(query):
     driver.close()
 
     results = soup.find_all(class_="entry-title")
-    print(results)
 
     songs = []
     for result in results:
@@ -138,9 +137,10 @@ def metasearch(query):
     results = []
     for title, score in scores:
         for song in songs:
+            if song in results:
+                continue
             if song["title"] == title:
                 song["score"] = score
                 results.append(song)
-                break
     
     return results
