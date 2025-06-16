@@ -109,8 +109,13 @@ def scrape_nodebasen(query):
 def scrape_tfkmedia(query):
     base_url = f"https://tfkmedia.dk/?s={query}"
 
-    r = requests.get(base_url)
-    soup = BeautifulSoup(r.text, "html.parser")
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Firefox(options=options)
+    driver.get(base_url)
+
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    driver.close()
 
     results = soup.find_all(class_="entry-title")
     print(results)
@@ -126,7 +131,7 @@ def scrape_tfkmedia(query):
     return songs
 
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query)
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query) + scrape_tfkmedia(query)
     song_titles = [song["title"] for song in songs]
     scores = process.extract(query, song_titles, limit=10)
 
@@ -139,3 +144,5 @@ def metasearch(query):
                 break
     
     return results
+
+scrape_tfkmediav2("hil dig")
