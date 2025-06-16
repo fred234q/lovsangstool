@@ -144,5 +144,3 @@ def metasearch(query):
                 break
     
     return results
-
-scrape_tfkmediav2("hil dig")
