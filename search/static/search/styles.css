@@ -1,4 +1,6 @@
-.body {
+@media screen and (min-width: 50em) {
+    .body {
     width: 60%;
     margin: 5em auto;
+}
 }
