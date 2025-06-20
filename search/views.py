@@ -4,6 +4,7 @@ from search.search import metasearch
 from django.urls import reverse
 from search.models import Song, Source
 from django.http import JsonResponse
+from fuzzywuzzy import process
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
@@ -24,6 +25,22 @@ def search_view(request):
         source, created = Source.objects.get_or_create(name=source_name)
         song, created = Song.objects.get_or_create(title=title, url=url, source=source)
         songs.append(song)
+
+    return render(request, "search/index.html", {
+        "songs": songs
+    })
+
+def new_search_view(request):
+    if not request.GET:
+        return render(request, "search/index.html")
+    
+    query = request.GET["q"]
+    songs = Song.objects.all()
+    results = []
+    for song in songs:
+        results.append(song.title)
+
+    songs = process.extract(query, results, limit=10)
 
     return render(request, "search/index.html", {
         "songs": songs

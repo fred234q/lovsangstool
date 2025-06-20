@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     parse_song(songId);
 });
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const query = urlParams.get('q')
+console.log(query);
+
 function parse_song(songId) {
 
     fetch(`/song/${songId}/chordpro`)

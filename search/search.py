@@ -145,6 +145,7 @@ def metasearch(query):
                 continue
             if song["title"] == title:
                 song["score"] = score
-                results.append(song)
+                if score >= 90:
+                    results.append(song)
     
     return results
