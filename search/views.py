@@ -1,12 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from search.search import metasearch
-from django import forms
 from django.urls import reverse
 from search.models import Song, Source
-import requests
-from django.core.files import File
-import os
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
