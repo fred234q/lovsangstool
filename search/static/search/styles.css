@@ -2,7 +2,13 @@
     .body {
     width: 60%;
     margin: 5em auto;
+    text-align: center;
 }
+}
+
+h1 a {
+    color: unset;
+    text-decoration: unset;
 }
 
 .chord {
@@ -42,4 +48,12 @@
 .subtitle {
     font-size: 1.1em;
     color: #666;
+}
+
+#lyrics-container {
+    text-align: center;
+}
+
+ul {
+    list-style: none;
 }

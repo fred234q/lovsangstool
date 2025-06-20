@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from search.search import metasearch
 from django.urls import reverse
 from search.models import Song, Source
+from django.http import JsonResponse
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
@@ -13,6 +14,8 @@ def search_view(request):
     
     query = request.GET["q"]
     results = metasearch(query)
+
+    songs = []
     for result in results:
         title = result["title"]
         url = result["url"]
@@ -20,7 +23,35 @@ def search_view(request):
         
         source, created = Source.objects.get_or_create(name=source_name)
         song, created = Song.objects.get_or_create(title=title, url=url, source=source)
+        songs.append(song)
 
     return render(request, "search/index.html", {
-        "results": results
+        "songs": songs
     })
+
+def song_view(request, song_id):
+    try:
+        song = Song.objects.get(id=song_id)
+    except:
+        return HttpResponseRedirect(reverse("search"))
+    
+    return render(request, "search/song.html", {
+        "song": song
+    })
+
+# API functions
+def load_chordpro(request, song_id):
+    try:
+        song = Song.objects.get(id=song_id)
+    except:
+        return JsonResponse({"error": "Song not found."}, status=404)
+    
+    song.get_chordpro()
+
+    if not song.chordpro:
+        return JsonResponse({"error": "Chordpro file not found."}, status=404)
+    
+    file_path = song.chordpro.path
+    with open(file_path, "r", encoding="utf-8") as f:
+        chordpro = f.read()
+        return JsonResponse({"chordpro": chordpro})
