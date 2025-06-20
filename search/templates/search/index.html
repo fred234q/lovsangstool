@@ -14,4 +14,10 @@
             {% endfor %}
         </ul>
     </div>
+    <div id="lyrics"></div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'search/bundle.js' %}"></script>
+    <script type="module" src="{% static 'search/chordpro.js' %}"></script>
 {% endblock %}
