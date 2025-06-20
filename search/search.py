@@ -148,28 +148,3 @@ def metasearch(query):
                 results.append(song)
     
     return results
-
-def scrape_song(song):
-    source = song["source"]
-    url = song["url"]
-
-    if source == "Worship Today":
-        url_cutoff = len("https://worshiptoday.dk/lovsange/")
-        path = url[url_cutoff:len(url) - 1]
-        chordpro_url = f"https://worshiptoday.dk/lovsange/download/{path}.cho"
-
-        r = requests.get(chordpro_url)
-        filename = f"{path}.chordpro"
-        with open(filename, "wb") as fd:
-            for chunk in r.iter_content(chunk_size=128):
-                fd.write(chunk)
-        
-        song = Song(filename=filename, notes="")
-        song.lyrics_only()
-        song.encoding("utf-8")
-        song.compile()
-        
-
-
-# scrape_song({"source": "Worship Today", "url": "https://worshiptoday.dk/lovsange/aere-vaere-du-guds-lam-david-skarsholm/"})
-        
