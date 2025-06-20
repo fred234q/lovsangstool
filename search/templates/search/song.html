@@ -1,0 +1,11 @@
+{% extends "search/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1><a href="{% url 'index' %}">Lovsangsfinderen</a></h1>
+    <div id="lyrics-container" data-song-id="{{ song.id }}">{{ song.chordpro }}</div>
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'search/chordpro.js' %}"></script>
+{% endblock %}
