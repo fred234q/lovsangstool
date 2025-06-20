@@ -1,0 +1,28 @@
+{% extends "search/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1><a href="{% url 'index' %}">Lovsangsfinderen</a></h1>
+    <form id="search-form" action="{% url 'search' %}">
+        <input id="search-field" name="q"></textarea>
+        <input type="submit" value="Søg">
+    </form>
+    <div id="results">
+        <ul>
+            {% for song in songs %}
+                <li>
+                    {% if song.source.name in "WorshipToday" %}
+                        <a href="{% url 'song' song_id=song.id %}">{{ song.title }}</a>
+                    {% else %}
+                        {{ song.title}}
+                    {% endif %}
+                     (<a href={{ song.url }}>Kilde</a>)</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="lyrics"></div>
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'search/chordpro.js' %}"></script>
+{% endblock %}
