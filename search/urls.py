@@ -8,4 +8,5 @@ urlpatterns = [
 
     # API routes
     path("song/<int:song_id>/chordpro", views.load_chordpro, name="load_chordpro"),
+    path("get-songs/<str:query>", views.get_songs, name="get_songs"),
 ]

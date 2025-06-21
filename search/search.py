@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import requests
 import time
-from fuzzywuzzy import process
+from thefuzz import process
 from django.core.files import File
 from django.core.files.storage import default_storage
 import os
@@ -136,7 +136,7 @@ def scrape_tfkmedia(query):
 def metasearch(query):
     songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query) + scrape_tfkmedia(query)
     song_titles = [song["title"] for song in songs]
-    scores = process.extract(query, song_titles, limit=10)
+    scores = process.extract(query, song_titles, limit=len(song_titles))
 
     results = []
     for title, score in scores:
@@ -145,7 +145,6 @@ def metasearch(query):
                 continue
             if song["title"] == title:
                 song["score"] = score
-                if score >= 90:
-                    results.append(song)
+                results.append(song)
     
     return results

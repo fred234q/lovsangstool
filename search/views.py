@@ -4,16 +4,13 @@ from search.search import metasearch
 from django.urls import reverse
 from search.models import Song, Source
 from django.http import JsonResponse
-from fuzzywuzzy import process
+from thefuzz import process
+from thefuzz import fuzz
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
 
-def search_view(request):
-    if not request.GET:
-        return render(request, "search/index.html")
-    
-    query = request.GET["q"]
+def get_songs(request, query):
     results = metasearch(query)
 
     songs = []
@@ -25,22 +22,29 @@ def search_view(request):
         source, created = Source.objects.get_or_create(name=source_name)
         song, created = Song.objects.get_or_create(title=title, url=url, source=source)
         songs.append(song)
+    print(f"{len(songs)} songs found.")
+    return HttpResponse(status=204)
 
-    return render(request, "search/index.html", {
-        "songs": songs
-    })
-
-def new_search_view(request):
+def search_view(request):
     if not request.GET:
         return render(request, "search/index.html")
     
     query = request.GET["q"]
     songs = Song.objects.all()
-    results = []
-    for song in songs:
-        results.append(song.title)
 
-    songs = process.extract(query, results, limit=10)
+    unsorted_songs = []
+    for song in songs:
+        print(song.title, fuzz.partial_ratio(song.title.lower(), query.lower()))
+        unsorted_songs.append((song.title, song))
+    
+    sorted_songs = process.extract(query, unsorted_songs, limit=10)
+
+    songs = []
+    for song in sorted_songs:
+        songs.append(song[0][1])
+
+    if not songs:
+        get_songs(request, query)
 
     return render(request, "search/index.html", {
         "songs": songs
