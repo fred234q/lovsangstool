@@ -5,11 +5,8 @@ from selenium.webdriver.firefox.options import Options
 import requests
 import time
 from thefuzz import process
-from django.core.files import File
 from django.core.files.storage import default_storage
-import os
 from django.conf import settings
-from pychordpro import Song
 
 def scrape_worshiptoday(query):
     base_url = "https://worshiptoday.dk/soeg"

@@ -4,7 +4,6 @@ from search.search import metasearch
 from django.urls import reverse
 from search.models import Song, Source
 from django.http import JsonResponse
-from thefuzz import process
 from thefuzz import fuzz
 
 def index(request):
