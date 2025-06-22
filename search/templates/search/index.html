@@ -11,7 +11,7 @@
         <ul>
             {% for song in songs %}
                 <li>
-                    {% if song.source.name in "WorshipToday" %}
+                    {% if song.source.name in "WorshipToday lovsang.dk" %}
                         <a href="{% url 'song' song_id=song.id %}">{{ song.title }}</a>
                     {% else %}
                         {{ song.title}}

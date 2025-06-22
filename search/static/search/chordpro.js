@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Get new search results via metasearch in Python
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-const query = urlParams.get('q')
-fetch(`/get-songs/${query}`)
+// const queryString = window.location.search;
+// const urlParams = new URLSearchParams(queryString);
+// const query = urlParams.get('q')
+// fetch(`/get-songs/${query}`)
 
 function parse_song(songId) {
 

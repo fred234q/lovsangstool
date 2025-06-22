@@ -3,6 +3,8 @@ from django.core.files import File
 
 import requests
 import os
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 class Song(models.Model):
     title = models.CharField(max_length=64)
@@ -14,7 +16,10 @@ class Song(models.Model):
         return self.title
     
     def get_chordpro(self):
-        if self.source.name == "WorshipToday" and not self.chordpro:
+        if self.chordpro:
+            return
+        
+        if self.source.name == "WorshipToday":
             url_cutoff = len("https://worshiptoday.dk/lovsange/")
             path = self.url[url_cutoff:len(self.url) - 1]
             chordpro_url = f"https://worshiptoday.dk/lovsange/download/{path}.cho"
@@ -22,13 +27,52 @@ class Song(models.Model):
             r = requests.get(chordpro_url)
 
             filename = f"{path}.chordpro"
-            with open(filename, "wb") as fd:
-                for chunk in r.iter_content(chunk_size=128):
-                    fd.write(chunk)
-            
-            with open(filename, "rb") as fd:
-                self.chordpro.save(f"songs/{filename}", File(fd))
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(r.text)
+
+            with open(filename, "r") as f:
+                self.chordpro.save(f"songs/{filename}", File(f))
             os.remove(filename)
+            
+            return
+        
+        if self.source.name == "lovsang.dk":
+            options = Options()
+            options.add_argument("--headless")
+
+            driver = webdriver.Firefox(options=options)
+            driver.get(self.url)
+
+            # Get cookie to download correct chordpro file
+            session_cookie = driver.get_cookie("PHPSESSID")
+            cookies = {"PHPSESSID": session_cookie["value"]} if session_cookie else {}
+            driver.close()
+
+            headers = {
+                "User-Agent": "Mozilla/5.0",
+                "Referer": "https://lovsang.dk/song/view.php?song_id=29",
+            }   
+
+            r = requests.get(
+                "https://lovsang.dk/song/download.php",
+                headers=headers,
+                cookies=cookies
+                )
+
+            # Find title from header
+            title_header = r.headers["Content-Disposition"]
+            title_start = title_header.find("\"") + 1
+            title = title_header[title_start:len(title_header) - 1]
+
+            filename = title
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write("\n" + r.text)
+
+            with open(filename, "r") as f:
+                self.chordpro.save(f"songs/{filename}", File(f))
+            os.remove(filename)
+            
+            return
 
 class Source(models.Model):
     name = models.CharField(max_length=64)

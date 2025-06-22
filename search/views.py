@@ -30,21 +30,24 @@ def search_view(request):
         return render(request, "search/index.html")
     
     query = request.GET["q"]
-    songs = Song.objects.all()
+    songs = list(Song.objects.all())
 
-    unsorted_songs = []
-    for song in songs:
-        print(song.title, fuzz.partial_ratio(song.title.lower(), query.lower()))
-        unsorted_songs.append((song.title, song))
-    
-    sorted_songs = process.extract(query, unsorted_songs, limit=10)
+    # Sort songs by partial_ratio score
+    songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
+    songs.reverse()
 
-    songs = []
-    for song in sorted_songs:
-        songs.append(song[0][1])
-
-    if not songs:
+    # Request new songs if bad results
+    if fuzz.partial_ratio(songs[0].title.lower(), query.lower()) < 90:
         get_songs(request, query)
+
+        # Repeat songs retrieval
+        songs = list(Song.objects.all())
+        songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
+        songs.reverse()
+
+    # Adjust amount of search results
+    result_count = 10
+    songs = songs[:result_count]
 
     return render(request, "search/index.html", {
         "songs": songs
