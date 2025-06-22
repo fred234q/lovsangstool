@@ -32,6 +32,10 @@ def search_view(request):
     query = request.GET["q"]
     songs = list(Song.objects.all())
 
+    if not songs:
+        get_songs(request, query)
+        songs = list(Song.objects.all())
+
     # Sort songs by partial_ratio score
     songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
     songs.reverse()
