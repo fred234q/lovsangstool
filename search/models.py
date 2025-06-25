@@ -3,8 +3,6 @@ from django.core.files import File
 
 import requests
 import os
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
 
 class Song(models.Model):
     title = models.CharField(max_length=64)

@@ -1,12 +1,6 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
 import requests
-import time
 from thefuzz import process
-from django.core.files.storage import default_storage
-from django.conf import settings
 
 def scrape_worshiptoday(query):
     base_url = "https://worshiptoday.dk/soeg"
@@ -106,13 +100,14 @@ def scrape_nodebasen(query):
 def scrape_tfkmedia(query):
     base_url = f"https://tfkmedia.dk/?s={query}"
 
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    driver.get(base_url)
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+    }
 
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    driver.close()
+    r = requests.get(base_url, headers=headers)
+
+
+    soup = BeautifulSoup(r.text, "html.parser")
 
     results = soup.find_all(class_="entry-title")
 
