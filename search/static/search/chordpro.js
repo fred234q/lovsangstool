@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function parse_song(songId) {
 
-    fetch(`/song/${songId}/chordpro`)
+    fetch(`/sang/${songId}/chordpro`)
     .then(response => response.json())
     .then(chordproObject => {
         // Print song
