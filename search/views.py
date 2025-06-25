@@ -5,6 +5,10 @@ from django.urls import reverse
 from search.models import Song, Source
 from django.http import JsonResponse
 from thefuzz import fuzz
+from thefuzz import process
+
+# Variables
+SORTING_ALG = "process"
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
@@ -34,10 +38,15 @@ def search_view(request):
     if not songs:
         get_songs(request, query)
         songs = list(Song.objects.all())
+    
+    if SORTING_ALG == "process":
+        songs = process.extract(query, songs, limit=10)
+        songs = [song[0] for song in songs]
 
-    # Sort songs by partial_ratio score
-    songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
-    songs.reverse()
+    if SORTING_ALG == "partial_ratio":
+        # Sort songs by partial_ratio score
+        songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
+        songs.reverse()
 
     # Request new songs if bad results
     if fuzz.partial_ratio(songs[0].title.lower(), query.lower()) < 90:
