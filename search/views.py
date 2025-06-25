@@ -21,7 +21,7 @@ def get_songs(request, query):
         source, created = Source.objects.get_or_create(name=source_name)
         song, created = Song.objects.get_or_create(title=title, url=url, source=source)
         songs.append(song)
-    print(f"{len(songs)} songs found.")
+
     return HttpResponse(status=204)
 
 def search_view(request):

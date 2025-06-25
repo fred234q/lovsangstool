@@ -35,6 +35,7 @@ class Song(models.Model):
             return
         
         if self.source.name == "lovsang.dk":
+            # Add headers needed to not get flagged
             headers = {
                 "User-Agent": "Mozilla/5.0",
             }   
@@ -44,6 +45,7 @@ class Song(models.Model):
                 headers=headers
                 )
 
+            # Get session cookie to retrive the right chordpro file
             cookies = {"PHPSESSID": r.cookies["PHPSESSID"]}
 
             r = requests.get(
@@ -59,6 +61,7 @@ class Song(models.Model):
 
             filename = title
             with open(filename, "w", encoding="utf-8") as f:
+                # Add line break missing from lovsang.dk chordpro files
                 f.write("\n" + r.text)
 
             with open(filename, "r") as f:

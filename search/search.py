@@ -24,6 +24,7 @@ def scrape_worshiptoday(query):
     return songs
 
 def scrape_lovsang(query):
+    # Add headers to avoid getting flagged
     headers = {
         "User-Agent": "Mozilla/5.0",
     }
@@ -122,7 +123,7 @@ def scrape_tfkmedia(query):
     return songs
 
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_stillestunder() + scrape_nodebasen(query) + scrape_tfkmedia(query)
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query)
     song_titles = [song["title"] for song in songs]
     scores = process.extract(query, song_titles, limit=len(song_titles))
 
@@ -136,3 +137,6 @@ def metasearch(query):
                 results.append(song)
     
     return results
+
+# Only scrape stillestunder on startup as it will scrape the entire catalog
+scrape_stillestunder()
