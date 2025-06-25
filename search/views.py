@@ -40,7 +40,7 @@ def search_view(request):
         songs = list(Song.objects.all())
     
     if SORTING_ALG == "process":
-        songs = process.extract(query, songs, limit=10)
+        songs = process.extract(query, songs, limit=len(songs))
         songs = [song[0] for song in songs]
 
     if SORTING_ALG == "partial_ratio":
