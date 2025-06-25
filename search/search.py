@@ -141,32 +141,3 @@ def metasearch(query):
                 results.append(song)
     
     return results
-
-headers = {
-    "User-Agent": "Mozilla/5.0",
-}   
-query = ""
-
-r = requests.get(f"https://lovsang.dk/sange_xhr.php?sEcho=5&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength=10&mDataProp_0=0&sSearch_0={query} __lang__&bRegex_0=false&bSearchable_0=true&sSearch=&bRegex=false&order_by=title&order_direction=ASC&_=1750808394764", headers=headers)
-results = r.json()["aaData"]
-html = ""
-for result in results:
-    html += f"{result[0]}\n"
-
-soup = BeautifulSoup(html, "html.parser")
-print(type(soup))
-
-songs = soup.find_all("div")
-for song in songs:
-    print(song)
-
-print(r.cookies["PHPSESSID"])
-
-# cookies = {"PHPSESSID": "bfca03975ea31d31e85096c5d4ebcc5e"}
-
-# r = requests.get(
-#     "https://lovsang.dk/song/download.php",
-#     headers=headers,
-#     cookies=cookies
-#     )
-

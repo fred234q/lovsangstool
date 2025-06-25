@@ -37,21 +37,16 @@ class Song(models.Model):
             return
         
         if self.source.name == "lovsang.dk":
-            options = Options()
-            options.add_argument("--headless")
-
-            driver = webdriver.Firefox(options=options)
-            driver.get(self.url)
-
-            # Get cookie to download correct chordpro file
-            session_cookie = driver.get_cookie("PHPSESSID")
-            cookies = {"PHPSESSID": session_cookie["value"]} if session_cookie else {}
-            driver.close()
-
             headers = {
                 "User-Agent": "Mozilla/5.0",
-                # "Referer": "https://lovsang.dk/song/view.php?song_id=29",
             }   
+
+            r = requests.get(
+                self.url,
+                headers=headers
+                )
+
+            cookies = {"PHPSESSID": r.cookies["PHPSESSID"]}
 
             r = requests.get(
                 "https://lovsang.dk/song/download.php",
