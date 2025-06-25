@@ -50,7 +50,7 @@ class Song(models.Model):
 
             headers = {
                 "User-Agent": "Mozilla/5.0",
-                "Referer": "https://lovsang.dk/song/view.php?song_id=29",
+                # "Referer": "https://lovsang.dk/song/view.php?song_id=29",
             }   
 
             r = requests.get(

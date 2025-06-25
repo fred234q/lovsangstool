@@ -30,33 +30,29 @@ def scrape_worshiptoday(query):
     return songs
 
 def scrape_lovsang(query):
-    base_url = "https://lovsang.dk/sange.php?all"
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+    }
 
-    # https://stackoverflow.com/a/60627463
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    driver.get(base_url)
+    r = requests.get(
+        f"https://lovsang.dk/sange_xhr.php?sEcho=5&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength=10&mDataProp_0=0&sSearch_0={query} __lang__&bRegex_0=false&bSearchable_0=true&sSearch=&bRegex=false&order_by=title&order_direction=ASC&_=1750808394764",
+        headers=headers
+        )
 
-    # Close pop-ups
-    driver.find_element(By.CSS_SELECTOR, "button.fc-button").click()
-    driver.find_element(By.CSS_SELECTOR, "button.button").click()
-    
-    # Input search query in input field
-    input_field = driver.find_element(By.ID, "title_filter")
-    input_field.send_keys(query)
-    # Wait for search results to update
-    time.sleep(0.5)
+    request_data = r.json()["aaData"]
 
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    driver.close()
+    html_data = ""
+    for request_data_point in request_data:
+        html_data += f"{request_data_point[0]}\n"
 
-    results = soup.find_all(class_="songinfo")
+    soup = BeautifulSoup(html_data, "html.parser")
+
+    results = soup.find_all("div")
 
     songs = []
     for result in results:
-        title = result.span.get_text()
-        id = result.parent["ref"]
+        title = result["title"]
+        id = result["ref"]
         url = f"https://lovsang.dk/song/view.php?song_id={id}"
 
         song = {"title": title, "url": url, "source": "lovsang.dk"}
@@ -145,3 +141,32 @@ def metasearch(query):
                 results.append(song)
     
     return results
+
+headers = {
+    "User-Agent": "Mozilla/5.0",
+}   
+query = ""
+
+r = requests.get(f"https://lovsang.dk/sange_xhr.php?sEcho=5&iColumns=1&sColumns=&iDisplayStart=0&iDisplayLength=10&mDataProp_0=0&sSearch_0={query} __lang__&bRegex_0=false&bSearchable_0=true&sSearch=&bRegex=false&order_by=title&order_direction=ASC&_=1750808394764", headers=headers)
+results = r.json()["aaData"]
+html = ""
+for result in results:
+    html += f"{result[0]}\n"
+
+soup = BeautifulSoup(html, "html.parser")
+print(type(soup))
+
+songs = soup.find_all("div")
+for song in songs:
+    print(song)
+
+print(r.cookies["PHPSESSID"])
+
+# cookies = {"PHPSESSID": "bfca03975ea31d31e85096c5d4ebcc5e"}
+
+# r = requests.get(
+#     "https://lovsang.dk/song/download.php",
+#     headers=headers,
+#     cookies=cookies
+#     )
+
