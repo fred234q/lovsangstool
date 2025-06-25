@@ -6,9 +6,9 @@ import os
 
 class Song(models.Model):
     title = models.CharField(max_length=64)
-    url = models.URLField()
+    url = models.URLField(unique=True)
     source = models.ForeignKey("Source", on_delete=models.CASCADE, related_name="songs")
-    chordpro = models.FileField()
+    chordpro = models.FileField(unique=True)
 
     def __str__(self):
         return self.title
@@ -68,7 +68,7 @@ class Song(models.Model):
             return
 
 class Source(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, unique=True)
 
     def __str__(self):
         return self.name
