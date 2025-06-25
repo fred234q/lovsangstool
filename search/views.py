@@ -56,6 +56,11 @@ def search_view(request):
         "songs": songs
     })
 
+def update_results_view(request):
+    query = request.GET["q"]
+    get_songs(request, query)
+    return HttpResponseRedirect(reverse("search") + f"?q={query}")
+
 def song_view(request, song_id):
     try:
         song = Song.objects.get(id=song_id)

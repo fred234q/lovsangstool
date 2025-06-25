@@ -4,7 +4,7 @@
 {% block body %}
     <h1><a href="{% url 'index' %}">Lovsangsfinderen</a></h1>
     <form id="search-form" action="{% url 'search' %}">
-        <input id="search-field" name="q"></textarea>
+        <input id="search-field" name="q">
         <input type="submit" value="Søg">
     </form>
     <div id="results">
@@ -19,6 +19,12 @@
                      (<a href={{ song.url }}>Kilde</a>)</li>
             {% endfor %}
         </ul>
+        {% if songs %}
+            <form action="{% url 'update_results' %}">
+                <input name="q" value="{{ request.GET.q }}" hidden>
+                <input type="submit" value="Opdatér resultater">
+            </form>
+        {% endif %}
     </div>
     <div id="lyrics"></div>
 {% endblock %}
