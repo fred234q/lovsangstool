@@ -9,6 +9,7 @@ from thefuzz import process
 
 # Variables
 SORTING_ALG = "process"
+RESULT_COUNT = 10
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
@@ -40,7 +41,7 @@ def search_view(request):
         songs = list(Song.objects.all())
     
     if SORTING_ALG == "process":
-        songs = process.extract(query, songs, limit=len(songs))
+        songs = process.extract(query, songs, limit=RESULT_COUNT)
         songs = [song[0] for song in songs]
 
     if SORTING_ALG == "partial_ratio":
@@ -58,8 +59,7 @@ def search_view(request):
         songs.reverse()
 
     # Adjust amount of search results
-    result_count = 10
-    songs = songs[:result_count]
+    songs = songs[:RESULT_COUNT]
 
     return render(request, "search/index.html", {
         "songs": songs
