@@ -14,6 +14,9 @@ class Song(models.Model):
     def __str__(self):
         return self.title
     
+    def is_main(self):
+        return self.main_version is None
+    
     def get_chordpro(self):
         if self.chordpro:
             return
