@@ -9,6 +9,7 @@ class Song(models.Model):
     url = models.URLField(unique=True)
     source = models.ForeignKey("Source", on_delete=models.CASCADE, related_name="songs")
     chordpro = models.FileField(unique=True)
+    main_version = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="versions")
 
     def __str__(self):
         return self.title
