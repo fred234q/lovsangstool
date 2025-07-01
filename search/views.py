@@ -25,6 +25,10 @@ def get_songs(request, query):
         
         source, created = Source.objects.get_or_create(name=source_name)
         song, created = Song.objects.get_or_create(title=title, url=url, source=source)
+        if created:
+            song.main_version = song
+            song.save()
+        print(f"{song}: {song.main_version}")
         songs.append(song)
 
     return HttpResponse(status=204)
