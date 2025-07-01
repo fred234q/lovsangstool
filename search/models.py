@@ -57,6 +57,9 @@ class Song(models.Model):
                 headers=headers,
                 cookies=cookies
                 )
+            
+            # Manage encoding for æ, ø and å
+            r.encoding = "iso-8859-1"
 
             # Find title from header
             title_header = r.headers["Content-Disposition"]
