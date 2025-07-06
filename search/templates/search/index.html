@@ -10,13 +10,16 @@
     <div id="results">
         <ul>
             {% for song in songs %}
-                <li>
-                    {% if song.source.name in "WorshipToday lovsang.dk" %}
-                        <a href="{% url 'song' song_id=song.id %}">{{ song.title }}</a>
-                    {% else %}
-                        {{ song.title}}
-                    {% endif %}
-                     (<a href={{ song.url }}>Kilde</a>)</li>
+                {% if song.is_main %}
+                    <li>
+                        {% if song.source.name in "WorshipToday lovsang.dk" %}
+                            <a href="{% url 'song' song_id=song.id %}">{{ song.title }}</a>
+                        {% else %}
+                            {{ song.title}}
+                        {% endif %}
+                        (<a href={{ song.url }}>Kilde</a>)
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
         {% if songs %}

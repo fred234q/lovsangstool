@@ -1,9 +1,9 @@
 @media screen and (min-width: 50em) {
     .body {
-    width: 60%;
-    margin: 5em auto;
-    text-align: center;
-}
+        width: 60%;
+        margin: 5em auto;
+        text-align: center;
+    }
 }
 
 h1 a {
@@ -57,4 +57,16 @@ ul {
 
 #lyrics-container {
     text-align: center;
+}
+
+/* Song versions */
+@media screen and (min-width: 50em) {
+    .song-sidebar {
+        position: absolute;
+        right: 15%;
+    }
+}
+
+.versions-list form {
+    display: inline;
 }

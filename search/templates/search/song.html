@@ -4,10 +4,55 @@
 {% block body %}
     <h1><a href="{% url 'index' %}">Lovsangsfinderen</a></h1>
     <div class="song-sidebar">
-        <h2>Song Versions</h2>
+        <h2>Versioner af sangen</h2>
         <div class="versions-list">
-            {% for version in song.versions.all %}
-            {% endfor %}
+            <ul>
+                {% for version in song.main_version.versions.all %}
+                    <li>
+                        {% if version == song %}
+                            <b>{{ version.title }}</b>
+                        {% else %}
+                            <a href={% url 'song' song_id=version.id %}>{{ version.title }}</a>
+                        {% endif %}
+
+                        {% if not version.is_main %}
+                            <form method="post" action="{% url 'merge_songs' song_id=song.id %}">
+                                {% csrf_token %}
+                                <input name="secondary-id" value="{{ version.id }}" hidden>
+                                <button type="submit" name="mode" value="make-main">Gør primær</button>
+                            </form>
+
+                            <form method="post" action="{% url 'merge_songs' song_id=song.id %}">
+                                {% csrf_token %}
+                                <input name="secondary-id" value="{{ version.id }}" hidden>
+                                <button type="submit" name="mode" value="remove">Fjern</button>
+                            </form>
+                        {% else %}
+                            <button type="submit" disabled>Gør primær</button>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h3>Tilføj versioner</h3>
+            <div id="results">
+                <form method="post" action="{% url 'merge_songs' song_id=song.id %}">
+                    {% csrf_token %}
+                    <input name="mode" value="add" hidden>
+                    <ul>
+                        {% for result in results %}
+                            {% if result not in song.main_version.versions.all %}
+                                <li>
+                                    {{ result.title}}
+                                    (<a href={{ result.url }}>Kilde</a>)
+                                    <button type="submit" name="secondary-id" value={{ result.id }}>Tilføj</button>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </form>
+            </div>
+
         </div>
     </div>
     <div id="lyrics-container" data-song-id="{{ song.id }}">{{ song.chordpro }}</div>

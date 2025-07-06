@@ -80,8 +80,24 @@ def song_view(request, song_id):
     except:
         return HttpResponseRedirect(reverse("search"))
     
+    query = song.title
+    results = list(Song.objects.all())
+
+    if SORTING_ALG == "process":
+        results = process.extract(query, results, limit=RESULT_COUNT)
+        results = [song[0] for song in results]
+
+    if SORTING_ALG == "partial_ratio":
+        # Sort songs by partial_ratio score
+        results.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
+        results.reverse()
+
+    # Adjust amount of search results
+    results = results[:RESULT_COUNT]
+    
     return render(request, "search/song.html", {
-        "song": song
+        "song": song,
+        "results": results
     })
 
 # API functions
@@ -100,3 +116,39 @@ def load_chordpro(request, song_id):
     with open(file_path, "r", encoding="utf-8") as f:
         chordpro = f.read()
         return JsonResponse({"chordpro": chordpro})
+
+def merge_songs(request, song_id):
+    if request.method == "POST":
+        primary_id = song_id
+        secondary_id = request.POST.get("secondary-id")
+        mode = request.POST.get("mode")
+
+        try:
+            primary_song = Song.objects.get(pk=primary_id)
+            secondary_song = Song.objects.get(pk=secondary_id)
+            main_song = primary_song.main_version
+
+        except:
+            return HttpResponseRedirect(reverse("song", kwargs={"song_id": song_id}))
+        
+        if mode == "add":
+            secondary_song.main_version = main_song
+
+        elif mode == "remove":
+            secondary_song.main_version = secondary_song
+            print(version.title, "removed")
+
+        elif mode == "make-main":
+            for version in main_song.versions.all():
+                version.main_version = secondary_song
+                version.save()
+                # Update model from database to get new correct main
+                secondary_song.refresh_from_db()
+
+        secondary_song.save()
+
+        return HttpResponseRedirect(reverse("song", kwargs={"song_id": song_id}))
+
+    
+    else:
+        return HttpResponseRedirect(reverse("song", kwargs={"song_id": song_id}))
