@@ -3,6 +3,7 @@
 
 {% block body %}
     <h1><a href="{% url 'index' %}">Lovsangsfinderen</a></h1>
+    <div id="lyrics-container" data-song-id="{{ song.id }}">{{ song.chordpro }}</div>
     <div class="song-sidebar">
         <h2>Versioner af sangen</h2>
         <div class="versions-list">
@@ -59,7 +60,6 @@
 
         </div>
     </div>
-    <div id="lyrics-container" data-song-id="{{ song.id }}">{{ song.chordpro }}</div>
 {% endblock %}
 
 {% block script %}
