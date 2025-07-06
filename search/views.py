@@ -136,7 +136,6 @@ def merge_songs(request, song_id):
 
         elif mode == "remove":
             secondary_song.main_version = secondary_song
-            print(version.title, "removed")
 
         elif mode == "make-main":
             for version in main_song.versions.all():

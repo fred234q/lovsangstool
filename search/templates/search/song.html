@@ -43,7 +43,11 @@
                         {% for result in results %}
                             {% if result not in song.main_version.versions.all %}
                                 <li>
-                                    {{ result.title}}
+                                    {% if result.source.name in "WorshipToday lovsang.dk" %}
+                                        <a href={% url 'song' song_id=result.id %}>{{ result.title }}</a>
+                                    {% else %}
+                                        {{ result.title }}
+                                    {% endif %}
                                     (<a href={{ result.url }}>Kilde</a>)
                                     <button type="submit" name="secondary-id" value={{ result.id }}>Tilføj</button>
                                 </li>
