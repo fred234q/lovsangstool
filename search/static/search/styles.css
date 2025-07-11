@@ -16,14 +16,37 @@ ul {
 }
 
 
-/* Song page styling */
-/* .chord {
-    display: none;
-} */
+/* chords and lyrics */
+.chord-sheet {
+    text-align: initial;
+}
 
 .comment {
     font-size: 1.5em;
     color: rgba(0, 0, 0, 0.7)
+}
+
+.column:has(.lyrics:empty) {
+    margin-right: 15px;
+    min-width: 20px;
+    position: relative;
+}
+
+.paragraph {
+    margin-bottom: 1em;
+}
+
+.row {
+    display: flex;
+    margin-bottom: 0.5em;
+}
+
+.chord:after {
+    content: '\200b';
+}
+
+.lyrics:after {
+    content: '\200b';
 }
 
 
