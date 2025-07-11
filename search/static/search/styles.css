@@ -17,47 +17,15 @@ ul {
 
 
 /* Song page styling */
-.chord {
+/* .chord {
     display: none;
-}
+} */
 
-.row {
-    display: flex;
-}
-
-.lyrics-paragraph {
-    margin-bottom: 1.5em;
-}
-
-.section-header {
-    font-weight: bold;
-    margin: 1em 0 0.5em 0;
-    color: #555;
-}
-
-.lyric-line {
-    line-height: 1.6;
-    margin-bottom: 0.3em;
-}
-
-.title, .subtitle {
-    font-family: Arial, sans-serif;
-    margin: 0.5em 0;
-}
-
-.title {
+.comment {
     font-size: 1.5em;
-    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7)
 }
 
-.subtitle {
-    font-size: 1.1em;
-    color: #666;
-}
-
-#lyrics-container {
-    text-align: center;
-}
 
 /* Song versions */
 @media screen and (min-width: 50em) {
