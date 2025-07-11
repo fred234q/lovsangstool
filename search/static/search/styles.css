@@ -6,6 +6,10 @@
     }
 }
 
+.body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 h1 a {
     color: unset;
     text-decoration: unset;
@@ -30,6 +34,7 @@ ul {
     margin-right: 15px;
     min-width: 20px;
     position: relative;
+    margin-bottom: -1em;
 }
 
 .paragraph {
@@ -47,6 +52,10 @@ ul {
 
 .lyrics:after {
     content: '\200b';
+}
+
+.chord {
+    color: #d9534f;
 }
 
 
