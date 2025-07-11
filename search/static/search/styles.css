@@ -54,7 +54,7 @@ ul {
 @media screen and (min-width: 50em) {
     .song-sidebar {
         position: absolute;
-        right: 15%;
+        right: 10em;
         top: 5em;
     }
 }
