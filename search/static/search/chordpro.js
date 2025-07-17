@@ -1,6 +1,5 @@
 // import ChordSheetJS from './bundle.js';
-import ChordSheetJS from "https://esm.sh/chordsheetjs";
-
+import * as ChordProjectParser from "https://cdn.jsdelivr.net/npm/chordproject-parser@1.0.4/+esm";
 document.addEventListener('DOMContentLoaded', () => {
     const songId = document.querySelector('#lyrics-container').dataset.songId;
     parse_song(songId);
@@ -21,21 +20,13 @@ function parse_song(songId) {
         console.log(chordproObject)
         const chordproLyrics = chordproObject.chordpro
 
-        const chordSheet = chordproLyrics.substring(1);
+        const parser = new ChordProjectParser.default.ChordProParser();
+        const song = parser.parse(chordproLyrics);
 
-        const parser = new ChordSheetJS.ChordProParser();
-        const song = parser.parse(chordSheet);
+        const formatter = new ChordProjectParser.default.HtmlFormatter();
+        const songText = formatter.format(song);
 
-        const formatter = new ChordSheetJS.HtmlDivFormatter();
-        const disp = formatter.format(song);
-
-        const lyricsContainer = document.querySelector('#lyrics-container');
-        lyricsContainer.innerHTML = disp;
-
-        const paragraphs = document.querySelectorAll('.paragraph');
-
-        console.log(paragraphs);
-
+        document.querySelector('#lyrics-container').innerHTML = songText.join('');
     })
     .catch(error => {
         console.log('Error:', error);

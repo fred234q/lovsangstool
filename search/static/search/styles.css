@@ -19,52 +19,45 @@ ul {
     list-style: none;
 }
 
-
-/* chords and lyrics */
-.chord-sheet {
+#lyrics-container {
     text-align: initial;
+    padding-top: 20px;
 }
 
-.comment {
+.comment-line {
     font-size: 1.5em;
     color: rgba(0, 0, 0, 0.7)
 }
 
-.column:has(.lyrics:empty) {
-    margin-right: 15px;
-    min-width: 20px;
-    position: relative;
-    margin-bottom: -1em;
-}
-
-.paragraph {
-    margin-bottom: 1em;
-}
-
-.row {
-    display: flex;
-    margin-bottom: 0.5em;
-}
-
-.chord:after {
-    content: '\200b';
-}
-
-.lyrics:after {
-    content: '\200b';
-}
-
 .chord {
-    color: #d9534f;
+    color: #c5251d;
 }
 
+.metadata  {
+    display: none;
+}
+
+.metadata.title-metadata,
+.metadata.subtitle-metadata {
+    display: block !important;
+}
+
+.song-content {
+    column-count: 2;
+    column-gap: 20px;
+}
+
+.lyrics-line {
+    padding-top: 1em;
+    break-inside: avoid;
+}
 
 /* Song versions */
 @media screen and (min-width: 50em) {
     .song-sidebar {
         position: absolute;
         right: 10em;
-        top: 5em;
+        top: 11em;
     }
 }
 

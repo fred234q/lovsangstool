@@ -15,6 +15,7 @@
                         {% else %}
                             <a href={% url 'song' song_id=version.id %}>{{ version.title }}</a>
                         {% endif %}
+                        (<a href={{ version.url }}>Kilde</a>)
 
                         {% if not version.is_main %}
                             <form method="post" action="{% url 'merge_songs' song_id=song.id %}">
