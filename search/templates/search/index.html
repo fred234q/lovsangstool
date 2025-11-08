@@ -27,6 +27,10 @@
                 <input name="q" value="{{ request.GET.q }}" hidden>
                 <input type="submit" value="Opdatér resultater">
             </form>
+        {% else %}
+            <form action="{% url 'get_all' %}">
+                <input type="submit" value="Hent alle sange (langsom)">
+            </form>
         {% endif %}
     </div>
     <div id="lyrics"></div>

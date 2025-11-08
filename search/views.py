@@ -100,6 +100,10 @@ def song_view(request, song_id):
         "results": results
     })
 
+def get_all(request):
+    return HttpResponseRedirect(reverse("index"))
+
+
 # API functions
 def load_chordpro(request, song_id):
     try:

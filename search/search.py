@@ -123,7 +123,7 @@ def scrape_tfkmedia(query):
     return songs
 
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query)
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query) + scrape_stillestunder()
     song_titles = [song["title"] for song in songs]
     scores = process.extract(query, song_titles, limit=len(song_titles))
 
@@ -138,5 +138,25 @@ def metasearch(query):
     
     return results
 
-# Only scrape stillestunder on startup as it will scrape the entire catalog
-scrape_stillestunder()
+# Scrapes all songs from all sites
+def scrape_all():
+    # Scrape worshiptoday
+    r = requests.get("https://worshiptoday.dk/lovsange")
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    results = soup.find_all(class_="col-md-3")
+    
+    songs = []
+    for result in results:
+
+        song_details = result.a.find(class_="thumbnail").ul.find_all("li")
+        title = song_details[0].get_text()
+        path = result.a["href"]
+        url = f"https://worshiptoday.dk{path}"
+
+        song = {"title": title, "url": url, "source": "WorshipToday"}
+        songs.append(song)
+
+    # Scrape
+    
+scrape_all()
