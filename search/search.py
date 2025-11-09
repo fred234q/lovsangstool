@@ -221,5 +221,34 @@ def scrape_all():
         
     #     page += 1
 
+    # # Scrape TFK Media
+    # total_categories = 16
+    # for i in range(0, total_categories):
+    #     page = 1
+    #     while True:
+    #         base_url = f"https://tfkmedia.dk/?paged={page}&cat={i}"
+
+    #         headers = {
+    #             "User-Agent": "Mozilla/5.0",
+    #         }
+
+    #         r = requests.get(base_url, headers=headers)
+
+
+    #         soup = BeautifulSoup(r.text, "html.parser")
+
+    #         results = soup.find_all(class_="entry-title")
+
+    #         if len(results) == 0:
+    #             break
+
+    #         for result in results:
+    #             title = result.a.get_text()
+    #             url = result.a["href"]
+
+    #             song = {"title": title, "url": url, "source": "TFK Media"}
+    #             songs.append(song)
+            
+    #         page += 1
     
 scrape_all()
