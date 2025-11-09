@@ -145,110 +145,105 @@ def scrape_all():
         "User-Agent": "Mozilla/5.0",
     }
 
-    # # Scrape WorshipToday
-    # r = requests.get("https://worshiptoday.dk/lovsange")
-    # soup = BeautifulSoup(r.text, "html.parser")
+    # Scrape WorshipToday
+    r = requests.get("https://worshiptoday.dk/lovsange")
+    soup = BeautifulSoup(r.text, "html.parser")
 
-    # results = soup.find_all(class_="col-md-3")
+    results = soup.find_all(class_="col-md-3")
     
-    # songs = []
-    # for result in results:
+    songs = []
+    for result in results:
 
-    #     song_details = result.a.find(class_="thumbnail").ul.find_all("li")
-    #     title = song_details[0].get_text()
-    #     path = result.a["href"]
-    #     url = f"https://worshiptoday.dk{path}"
+        song_details = result.a.find(class_="thumbnail").ul.find_all("li")
+        title = song_details[0].get_text()
+        path = result.a["href"]
+        url = f"https://worshiptoday.dk{path}"
 
-    #     song = {"title": title, "url": url, "source": "WorshipToday"}
-    #     songs.append(song)
+        song = {"title": title, "url": url, "source": "WorshipToday"}
+        songs.append(song)
 
-    # # Scrape lovsang.dk
-    # index = 0
-    # while True:
-    #     r = requests.get(
-    #         f"https://lovsang.dk/sange_xhr.php?sEcho=6&iColumns=1&sColumns=&iDisplayStart={index}&iDisplayLength=10&mDataProp_0=0&sSearch_0=du sagde __lang__&bRegex_0=false&bSearchable_0=true&sSearch=&bRegex=false&order_by=title&order_direction=ASC&_=1762644971686",
-    #         headers=headers
-    #         )
+    # Scrape lovsang.dk
+    index = 0
+    while True:
+        r = requests.get(
+            f"https://lovsang.dk/sange_xhr.php?sEcho=6&iColumns=1&sColumns=&iDisplayStart={index}&iDisplayLength=10&mDataProp_0=0&sSearch_0=du sagde __lang__&bRegex_0=false&bSearchable_0=true&sSearch=&bRegex=false&order_by=title&order_direction=ASC&_=1762644971686",
+            headers=headers
+            )
         
-    #     request_data = r.json()["aaData"]
+        request_data = r.json()["aaData"]
 
-    #     html_data = ""
-    #     for request_data_point in request_data:
-    #         html_data += f"{request_data_point[0]}\n"
+        html_data = ""
+        for request_data_point in request_data:
+            html_data += f"{request_data_point[0]}\n"
 
-    #     soup = BeautifulSoup(html_data, "html.parser")
+        soup = BeautifulSoup(html_data, "html.parser")
 
-    #     results = soup.find_all("div")
+        results = soup.find_all("div")
 
-    #     if len(results) == 0:
-    #         break
+        if len(results) == 0:
+            break
 
-    #     for result in results:
-    #         title = result["title"]
-    #         id = result["ref"]
-    #         url = f"https://lovsang.dk/song/view.php?song_id={id}"
+        for result in results:
+            title = result["title"]
+            id = result["ref"]
+            url = f"https://lovsang.dk/song/view.php?song_id={id}"
 
-    #         song = {"title": title, "url": url, "source": "lovsang.dk"}
-    #         songs.append(song)
+            song = {"title": title, "url": url, "source": "lovsang.dk"}
+            songs.append(song)
         
-    #     index += 10
+        index += 10
 
-    # # Scrape Stille Stunder
-    # songs.append(scrape_stillestunder())
+    # Scrape Stille Stunder
+    songs += scrape_stillestunder()
 
-    # # Scrape Nodebasen
-    # page = 1
-    # while True:
-    #     base_url = f"https://nodebasen.dk/page/{page}/?id=169&post_type=product"
+    # Scrape Nodebasen
+    page = 1
+    while True:
+        base_url = f"https://nodebasen.dk/page/{page}/?id=169&post_type=product"
 
-    #     r = requests.get(base_url)
-    #     soup = BeautifulSoup(r.text, "html.parser")
+        r = requests.get(base_url)
+        soup = BeautifulSoup(r.text, "html.parser")
 
-    #     results = soup.find_all("h3", class_="t-entry-title h3 font-weight-500 title-scale")
-    #     # Remove duplicates
-    #     results = results[:len(results) // 2]
+        results = soup.find_all("h3", class_="t-entry-title h3 font-weight-500 title-scale")
+        # Remove duplicates
+        results = results[:len(results) // 2]
 
-    #     if len(results) == 0:
-    #         break
+        if len(results) == 0:
+            break
 
-    #     for result in results:
-    #         title = result.a.get_text()
-    #         print(title)
-    #         url = result.a["href"]
+        for result in results:
+            title = result.a.get_text()
+            url = result.a["href"]
 
-    #         song = {"title": title, "url": url, "source": "nodebasen.dk"}
-    #         songs.append(song)
+            song = {"title": title, "url": url, "source": "nodebasen.dk"}
+            songs.append(song)
         
-    #     page += 1
+        page += 1
 
-    # # Scrape TFK Media
-    # total_categories = 16
-    # for i in range(0, total_categories):
-    #     page = 1
-    #     while True:
-    #         base_url = f"https://tfkmedia.dk/?paged={page}&cat={i}"
+    # Scrape TFK Media
+    total_categories = 16
+    for i in range(0, total_categories):
+        page = 1
+        while True:
+            base_url = f"https://tfkmedia.dk/?paged={page}&cat={i}"
 
-    #         headers = {
-    #             "User-Agent": "Mozilla/5.0",
-    #         }
-
-    #         r = requests.get(base_url, headers=headers)
+            r = requests.get(base_url, headers=headers)
 
 
-    #         soup = BeautifulSoup(r.text, "html.parser")
+            soup = BeautifulSoup(r.text, "html.parser")
 
-    #         results = soup.find_all(class_="entry-title")
+            results = soup.find_all(class_="entry-title")
 
-    #         if len(results) == 0:
-    #             break
+            if len(results) == 0:
+                break
 
-    #         for result in results:
-    #             title = result.a.get_text()
-    #             url = result.a["href"]
+            for result in results:
+                title = result.a.get_text()
+                url = result.a["href"]
 
-    #             song = {"title": title, "url": url, "source": "TFK Media"}
-    #             songs.append(song)
+                song = {"title": title, "url": url, "source": "TFK Media"}
+                songs.append(song)
             
-    #         page += 1
+            page += 1
     
-scrape_all()
+    return songs

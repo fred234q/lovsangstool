@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from search.search import metasearch
+from search.search import metasearch, scrape_all
 from django.urls import reverse
 from search.models import Song, Source
 from django.http import JsonResponse
@@ -101,6 +101,22 @@ def song_view(request, song_id):
     })
 
 def get_all(request):
+    results = scrape_all()
+
+    songs = []
+    for result in results:
+        title = result["title"]
+        url = result["url"]
+        source_name = result["source"]
+        
+        source, created = Source.objects.get_or_create(name=source_name)
+        song, created = Song.objects.get_or_create(title=title, url=url, source=source)
+        if created:
+            song.main_version = song
+            song.save()
+        print(f"{song}: {song.main_version}")
+        songs.append(song)
+
     return HttpResponseRedirect(reverse("index"))
 
 
