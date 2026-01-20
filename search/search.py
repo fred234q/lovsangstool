@@ -143,6 +143,8 @@ def scrape_worshiptogether(query):
 
         song = {"title": title, "url": url, "source": "Worship Togther"}
         songs.append(song)
+    
+    return songs
 
 
 def metasearch(query):
