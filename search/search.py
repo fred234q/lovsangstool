@@ -162,6 +162,7 @@ def metasearch(query):
                 results.append(song)
     
     return results
+metasearch("holy forever")
 
 # Scrapes all songs from all sites
 def scrape_all():
