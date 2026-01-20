@@ -1,5 +1,8 @@
+SELENIUM_ENABLED = 1
+
 from bs4 import BeautifulSoup
 import requests
+from requests_html import HTMLSession
 from thefuzz import process
 
 def scrape_worshiptoday(query):
@@ -121,6 +124,26 @@ def scrape_tfkmedia(query):
         songs.append(song)
 
     return songs
+
+def scrape_worshiptogether(query):
+    session = HTMLSession()
+    r = session.get(f"https://www.worshiptogether.com/search-results/#?cludoquery={query}&cludoCategory=Songs&cludopage=1&cludoinputtype=standard")
+    import asyncio
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    r.html.render(sleep=1, timeout=20)
+    results_div = r.html.find('#search-results', first=True)
+    soup = BeautifulSoup(results_div.html, "html.parser")
+
+    results = soup.find_all(class_="search-results-item")
+    
+    songs = []
+    for result in results:
+        title = result.a["title"]
+        url = result.a["href"]
+
+        song = {"title": title, "url": url, "source": "Worship Togther"}
+        songs.append(song)
+
 
 def metasearch(query):
     songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query) + scrape_stillestunder()
