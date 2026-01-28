@@ -12,7 +12,7 @@
             {% for song in songs %}
                 {% if song.is_main %}
                     <li>
-                        {% if song.source.name in "WorshipToday lovsang.dk" %}
+                        {% if song.source.name in "WorshipToday lovsang.dk 'Worship Together'" %}
                             <a href="{% url 'song' song_id=song.id %}">{{ song.title }}</a>
                         {% else %}
                             {{ song.title}}

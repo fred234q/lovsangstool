@@ -3,6 +3,7 @@ from django.core.files import File
 
 import requests
 import os
+from bs4 import BeautifulSoup
 
 class Song(models.Model):
     title = models.CharField(max_length=64)
@@ -76,6 +77,26 @@ class Song(models.Model):
             os.remove(filename)
             
             return
+        
+        if self.source.name == "Worship Together":
+            headers = {
+                "User-Agent": "Mozilla/5.0",
+            }
+
+            cookies = {"yourAuthCookie": "99ACA6C6006FA8145F5E90A142CC5DDE79385250C0CE1178DB62754AD8A9E0B13A81B4517D940C66E07E047BAA78EF37AF34067ABB208B0F552B1E3BC098D63EC34E28A3B5808DD6719D19E3D1F1B78091B3DCB763EC1E5001E029AA5072FA2139B17553C6CF70E55974B54121BFF21245B6442862B7033BD13BDE7F39DDBD26"}
+            r = requests.get(
+                self.url,
+                headers=headers,
+                cookies=cookies
+                )
+            soup = BeautifulSoup(r.text, "html.parser")
+
+            chordpro_button = soup.find_all(class_="free-chords")
+            print(chordpro_button)
+
+
+
+            # r = requests.get(chor)
 
 class Source(models.Model):
     name = models.CharField(max_length=64, unique=True)
