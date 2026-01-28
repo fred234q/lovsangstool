@@ -1,4 +1,4 @@
-SELENIUM_ENABLED = False
+SELENIUM_ENABLED = True
 
 from bs4 import BeautifulSoup
 import requests
