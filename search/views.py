@@ -24,7 +24,10 @@ def get_songs(request, query):
         source_name = result["source"]
         
         source, created = Source.objects.get_or_create(name=source_name)
-        song, created = Song.objects.get_or_create(title=title, url=url, source=source)
+        song, created = Song.objects.get_or_create(url=url, defaults={
+            "title":title,
+            "source":source
+        })
         if created:
             song.main_version = song
             song.save()
@@ -110,7 +113,10 @@ def get_all(request):
         source_name = result["source"]
         
         source, created = Source.objects.get_or_create(name=source_name)
-        song, created = Song.objects.get_or_create(title=title, url=url, source=source)
+        song, created = Song.objects.get_or_create(url=url, defaults={
+            "title": title,
+            "source": source
+        })
         if created:
             song.main_version = song
             song.save()

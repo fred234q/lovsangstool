@@ -1,10 +1,11 @@
-SELENIUM_ENABLED = True
+SELENIUM_ENABLED = False
 
 from bs4 import BeautifulSoup
 import requests
 from requests_html import HTMLSession
 from thefuzz import process
 import asyncio
+from playwright.sync_api import sync_playwright
 
 def scrape_worshiptoday(query):
     base_url = "https://worshiptoday.dk/soeg"
@@ -274,29 +275,49 @@ def scrape_all():
             page += 1
     
     # Scrape Worship Together
-    session = HTMLSession()
-    
-    page = 1
-    while True:
-        r = session.get(f"https://www.worshiptogether.com/search-results/#?cludoquery=Songs&cludoCategory=Songs&cludopage={page}&cludoinputtype=standard")
-        asyncio.set_event_loop(asyncio.new_event_loop())
-        r.html.render(sleep=1, timeout=20)
-        results_div = r.html.find('#search-results', first=True)
-        soup = BeautifulSoup(results_div.html, "html.parser")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
 
-        results = soup.find_all(class_="search-results-item")
+        page.goto(
+            f"https://www.worshiptogether.com/search-results/#?cludoquery=Songs&cludoCategory=Songs&cludopage=1"
+        )
+        i = 0
+        while True:
+            i += 1
+            print(i)
 
-        if len(results) == 0:
-            break
-        
-        for result in results:
-            title = result.a["title"]
-            url = result.a["href"]
+            page.wait_for_selector(".search-results-item", timeout=10000)
 
-            song = {"title": title, "url": url, "source": "Worship Togther"}
-            songs.append(song)
-        
-        page += 1
+            soup = BeautifulSoup(page.content(), "html.parser")
+            results = soup.select(".search-results-item")
+
+            if not results:
+                break
+
+            for result in results:
+                a = result.find("a")
+                print(a["title"])
+                songs.append({
+                    "title": a["title"],
+                    "url": a["href"],
+                    "source": "Worship Together",
+                })
+
+            # Try to go to next page
+            next_button = page.query_selector("li.next")
+
+            if not next_button or "disabled" in next_button.get_attribute("class"):
+                break
+
+            next_button.click()
+
+            # IMPORTANT: wait for NEW results, not the same DOM
+            page.wait_for_function(
+                "document.querySelectorAll('.search-results-item').length > 0"
+            )
+
+        browser.close()
 
     # Return songs
     return songs
