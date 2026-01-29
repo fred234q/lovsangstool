@@ -83,7 +83,7 @@ class Song(models.Model):
                 "User-Agent": "Mozilla/5.0",
             }
 
-            cookies = {"yourAuthCookie": "99ACA6C6006FA8145F5E90A142CC5DDE79385250C0CE1178DB62754AD8A9E0B13A81B4517D940C66E07E047BAA78EF37AF34067ABB208B0F552B1E3BC098D63EC34E28A3B5808DD6719D19E3D1F1B78091B3DCB763EC1E5001E029AA5072FA2139B17553C6CF70E55974B54121BFF21245B6442862B7033BD13BDE7F39DDBD26"}
+            cookies = {"yourAuthCookie": "CAC94B6526925B2FB3E13FDCBCE4564692CFE48B519E4A06FA0581AC345DBA0668B4CBDD422C781F69B0C447F2A1C7A4DA19189D462588C3E0075AB254710962FF85AEDE101BC51925AFCF7C007DF705A529ABBBF1A0E02209C7E6B65AB115AE9EA05588E2D283930695992BE86C3E5C790A52EC15A39ADE171AFC89FB25CB4E"}
             r = requests.get(
                 self.url,
                 headers=headers,
@@ -92,11 +92,31 @@ class Song(models.Model):
             soup = BeautifulSoup(r.text, "html.parser")
 
             chordpro_button = soup.find_all(class_="free-chords")
-            print(chordpro_button)
+            path = chordpro_button[-1]["href"]
+            chordpro_url = f"https://www.worshiptogether.com{path}"
 
+            if path == "#chordsDownload":
+                print("Error: Login cookie invalid.")
+                return
 
+            r = requests.get(
+                chordpro_url,
+                headers=headers,
+                cookies=cookies
+            )
 
-            # r = requests.get(chor)
+            url_cutoff = len("https://www.worshiptogether.com/songs/")
+            name = self.url[url_cutoff:len(self.url) - 1]
+
+            filename = f"{name}.chordpro"
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(r.text)
+
+            with open(filename, "r") as f:
+                self.chordpro.save(f"songs/{filename}", File(f))
+            os.remove(filename)
+            
+            return
 
 class Source(models.Model):
     name = models.CharField(max_length=64, unique=True)
