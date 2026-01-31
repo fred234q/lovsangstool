@@ -79,16 +79,24 @@ class Song(models.Model):
             return
         
         if self.source.name == "Worship Together":
-            headers = {
-                "User-Agent": "Mozilla/5.0",
+            session = requests.Session()
+
+            r = session.get("https://www.worshiptogether.com/membership/log-in/")
+
+            soup = BeautifulSoup(r.text, "html.parser")
+            ufprt = soup.find(class_="member_login").form.find_all("input")[-1]["value"]
+
+            data = {
+                "loginModel.RedirectUrl": "/",
+                "loginModel.Username": "user@example.com",
+                "loginModel.Password": "password",
+                "ufprt": ufprt
             }
 
-            cookies = {"yourAuthCookie": "CAC94B6526925B2FB3E13FDCBCE4564692CFE48B519E4A06FA0581AC345DBA0668B4CBDD422C781F69B0C447F2A1C7A4DA19189D462588C3E0075AB254710962FF85AEDE101BC51925AFCF7C007DF705A529ABBBF1A0E02209C7E6B65AB115AE9EA05588E2D283930695992BE86C3E5C790A52EC15A39ADE171AFC89FB25CB4E"}
-            r = requests.get(
-                self.url,
-                headers=headers,
-                cookies=cookies
-                )
+            session.post("https://www.worshiptogether.com/membership/log-in/", data=data)
+
+            r = session.get(self.url)
+
             soup = BeautifulSoup(r.text, "html.parser")
 
             chordpro_button = soup.find_all(class_="free-chords")
@@ -99,10 +107,8 @@ class Song(models.Model):
                 print("Error: Login cookie invalid.")
                 return
 
-            r = requests.get(
-                chordpro_url,
-                headers=headers,
-                cookies=cookies
+            r = session.get(
+                chordpro_url
             )
 
             url_cutoff = len("https://www.worshiptogether.com/songs/")
