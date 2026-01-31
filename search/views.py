@@ -105,8 +105,8 @@ def song_view(request, song_id):
 
 def get_all(request):
     results = scrape_all()
-
     songs = []
+    new_songs = 0
     for result in results:
         title = result["title"]
         url = result["url"]
@@ -120,9 +120,13 @@ def get_all(request):
         if created:
             song.main_version = song
             song.save()
-        print(f"{song}: {song.main_version}")
+            print(f"ADDED: {song.title}")
+            new_songs += 1
         songs.append(song)
-
+    
+    total_songs = Song.objects.count()
+    print(f"New songs: {new_songs}")
+    print(f"Total songs: {total_songs}")
     return HttpResponseRedirect(reverse("index"))
 
 
