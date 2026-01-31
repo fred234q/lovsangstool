@@ -312,50 +312,51 @@ def scrape_all():
             page += 1
     
     # Scrape Worship Together
-    i = 0
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
+    if BROWSER_RENDERING_ENABLED:
+        i = 0
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page()
 
-            page.goto(
-                f"https://www.worshiptogether.com/search-results/#?cludoquery=Songs&cludoCategory=Songs&cludopage=1"
-            )
-            while True:
-                i += 1
-                print(i)
-
-                page.wait_for_selector(".search-results-item", timeout=10000)
-
-                soup = BeautifulSoup(page.content(), "html.parser")
-                results = soup.select(".search-results-item")
-
-                if not results:
-                    break
-
-                for result in results:
-                    a = result.find("a")
-                    print(a["title"])
-                    songs.append({
-                        "title": a["title"],
-                        "url": a["href"],
-                        "source": "Worship Together",
-                    })
-
-                # Try to go to next page
-                next_button = page.query_selector("li.next")
-
-                if not next_button or "disabled" in next_button.get_attribute("class"):
-                    break
-
-                next_button.click()
-
-                # IMPORTANT: wait for NEW results, not the same DOM
-                page.wait_for_function(
-                    "document.querySelectorAll('.search-results-item').length > 0"
+                page.goto(
+                    f"https://www.worshiptogether.com/search-results/#?cludoquery=Songs&cludoCategory=Songs&cludopage=1"
                 )
+                while True:
+                    i += 1
+                    print(i)
 
-    finally:
-        print(f"Worship Together: reached page {i}")
+                    page.wait_for_selector(".search-results-item", timeout=10000)
+
+                    soup = BeautifulSoup(page.content(), "html.parser")
+                    results = soup.select(".search-results-item")
+
+                    if not results:
+                        break
+
+                    for result in results:
+                        a = result.find("a")
+                        print(a["title"])
+                        songs.append({
+                            "title": a["title"],
+                            "url": a["href"],
+                            "source": "Worship Together",
+                        })
+
+                    # Try to go to next page
+                    next_button = page.query_selector("li.next")
+
+                    if not next_button or "disabled" in next_button.get_attribute("class"):
+                        break
+
+                    next_button.click()
+
+                    # IMPORTANT: wait for NEW results, not the same DOM
+                    page.wait_for_function(
+                        "document.querySelectorAll('.search-results-item').length > 0"
+                    )
+
+        finally:
+            print(f"Worship Together: reached page {i}")
     # Return songs
     return songs
