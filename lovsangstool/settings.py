@@ -13,8 +13,17 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env
+load_dotenv(BASE_DIR / ".env")
+
+# Access environment variables
+WT_USERNAME = os.getenv("WT_USERNAME")
+WT_PASSWORD = os.getenv("WT_PASSWORD")
 
 
 # Quick-start development settings - unsuitable for production

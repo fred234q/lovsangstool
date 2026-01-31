@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.files import File
 
+from django.conf import settings
+
 import requests
 import os
 from bs4 import BeautifulSoup
@@ -79,6 +81,10 @@ class Song(models.Model):
             return
         
         if self.source.name == "Worship Together":
+            username = settings.WT_USERNAME
+            password = settings.WT_PASSWORD
+            print(username)
+
             session = requests.Session()
 
             r = session.get("https://www.worshiptogether.com/membership/log-in/")
@@ -88,8 +94,8 @@ class Song(models.Model):
 
             data = {
                 "loginModel.RedirectUrl": "/",
-                "loginModel.Username": "user@example.com",
-                "loginModel.Password": "password",
+                "loginModel.Username": username,
+                "loginModel.Password": password,
                 "ufprt": ufprt
             }
 
@@ -103,8 +109,8 @@ class Song(models.Model):
             path = chordpro_button[-1]["href"]
             chordpro_url = f"https://www.worshiptogether.com{path}"
 
-            if path == "#chordsDownload":
-                print("Error: Login cookie invalid.")
+            if not username or not password or path == "#chordsDownload":
+                print("Error: Login invalid.")
                 return
 
             r = session.get(
