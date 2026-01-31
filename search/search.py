@@ -1,4 +1,4 @@
-SELENIUM_ENABLED = True
+BROWSER_RENDERING_ENABLED = False
 
 from bs4 import BeautifulSoup
 import requests
@@ -183,7 +183,7 @@ def scrape_elevation(query):
 
 def metasearch(query):
     songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query) + scrape_elevation(query) + scrape_stillestunder()
-    # if SELENIUM_ENABLED:
+    # if BROWSER_RENDERING_ENABLED:
     #     songs += scrape_worshiptogether(query)
     song_titles = [song["title"] for song in songs]
     scores = process.extract(query, song_titles, limit=len(song_titles))
