@@ -147,9 +147,42 @@ def scrape_worshiptogether(query):
     
     return songs
 
+def scrape_elevation(query):
+    data = {
+    "query":query,
+    "indices":["tracks"]
+    }
+
+    r = requests.post("https://www.elevationworship.com/api/search", data=data)
+    results = r.json()
+
+    songs = []
+    for result in results:
+        title = result["_source"]["title"]
+
+        # Get url
+        slug = result["_source"]["slug"]
+        page_url = f"https://www.elevationworship.com/music/{slug}"
+        r = requests.get(page_url)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        charts = soup.find(id="charts")
+        try:
+            url = charts.next_sibling.find(class_="text-base gap-1.5 group items-center flex")["href"]
+        except:
+            continue # Continue if no lyrics
+
+        song = {
+            "title": title,
+            "url": url,
+            "source": "Elevation"
+        }
+        songs.append(song)
+
+    return songs
 
 def metasearch(query):
-    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query) + scrape_stillestunder()
+    songs = scrape_worshiptoday(query) + scrape_lovsang(query) + scrape_nodebasen(query) + scrape_tfkmedia(query) + scrape_elevation(query) + scrape_stillestunder()
     # if SELENIUM_ENABLED:
     #     songs += scrape_worshiptogether(query)
     song_titles = [song["title"] for song in songs]
@@ -279,6 +312,7 @@ def scrape_all():
             page += 1
     
     # Scrape Worship Together
+    i = 0
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -287,7 +321,6 @@ def scrape_all():
             page.goto(
                 f"https://www.worshiptogether.com/search-results/#?cludoquery=Songs&cludoCategory=Songs&cludopage=1"
             )
-            i = 0
             while True:
                 i += 1
                 print(i)
@@ -323,5 +356,6 @@ def scrape_all():
                 )
 
     finally:
-        # Return songs
-        return songs
+        print(f"Worship Together: reached page {i}")
+    # Return songs
+    return songs
