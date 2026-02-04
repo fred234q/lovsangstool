@@ -4,10 +4,19 @@
         margin: 5em auto;
         text-align: center;
     }
+
+    .song-content {
+        column-count: 2;
+        column-gap: 20px;
+    }
 }
 
 .body {
     font-family: Arial, Helvetica, sans-serif;
+}
+
+#lyrics-container {
+    text-align: left;
 }
 
 h1 a {
@@ -42,11 +51,6 @@ ul {
     display: block !important;
 }
 
-.song-content {
-    column-count: 2;
-    column-gap: 20px;
-}
-
 .lyrics-line {
     padding-top: 1em;
     break-inside: avoid;
@@ -63,4 +67,41 @@ ul {
 
 .versions-list form {
     display: inline;
+}
+
+
+.song-title h1 {
+    margin-bottom: 0;
+    
+}
+
+.song-title h2 {
+    margin-top: 0;
+    font-weight: normal;
+    color: #555;
+}
+
+.chords-lyrics-line {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    margin-bottom: 4px;
+}
+
+.chord-lyric-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    white-space: nowrap;
+}
+
+.chords {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #c5251d;
+    min-height: 1.5em; /* keeps spacing when chord is empty */
+}
+
+.lyrics {
+    font-size: 1em;
 }

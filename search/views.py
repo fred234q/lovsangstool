@@ -97,10 +97,19 @@ def song_view(request, song_id):
 
     # Adjust amount of search results
     results = results[:RESULT_COUNT]
+
+    song = Song.objects.all()[0]
+    file_path = song.chordpro.path
+    with open(file_path, "r", encoding="utf-8") as f:
+        chordpro = f.read()
+    from chopro import chopro2html
+    html = chopro2html(chordpro)
+    print(chordpro)
     
     return render(request, "search/song.html", {
         "song": song,
-        "results": results
+        "results": results,
+        "html": html
     })
 
 def get_all(request):
