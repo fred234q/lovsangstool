@@ -11,6 +11,20 @@ from thefuzz import process
 SORTING_ALG = "process"
 RESULT_COUNT = 10
 
+def song_score(song, query):
+    q = query.lower()
+
+    if song.chordpro:
+        file_path = song.chordpro.path
+        with open(file_path, "r", encoding="utf-8") as f:
+            chordpro = f.read()
+    else:
+        chordpro = ""
+    title_score = fuzz.WRatio(song.title.lower(), q)
+    lyric_score = fuzz.partial_ratio(chordpro.lower(), q)
+
+    return int(0.6 * title_score + 0.4 * lyric_score)
+
 def index(request):
     return HttpResponseRedirect(reverse("search"))
 
@@ -48,8 +62,10 @@ def search_view(request):
         songs = list(Song.objects.all())
     
     if SORTING_ALG == "process":
-        songs = process.extract(query, songs, limit=RESULT_COUNT)
-        songs = [song[0] for song in songs]
+        songs.sort(
+            key=lambda song: song_score(song, query),
+            reverse=True
+        )
 
     if SORTING_ALG == "partial_ratio":
         # Sort songs by partial_ratio score
@@ -57,16 +73,20 @@ def search_view(request):
         songs.reverse()
 
     # Request new songs if bad results
-    if fuzz.partial_ratio(songs[0].title.lower(), query.lower()) < 90:
+    if song_score(songs[0], query) < 55:
         get_songs(request, query)
 
         # Repeat songs retrieval
         songs = list(Song.objects.all())
-        songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
-        songs.reverse()
+        songs.sort(
+            key=lambda song: song_score(song, query),
+            reverse=True
+        )
 
     # Adjust amount of search results
     songs = songs[:RESULT_COUNT]
+    for song in songs:
+        print(song_score(song, query))
 
     return render(request, "search/index.html", {
         "songs": songs
@@ -97,8 +117,8 @@ def song_view(request, song_id):
 
     # Adjust amount of search results
     results = results[:RESULT_COUNT]
-
-    song = Song.objects.all()[0]
+    if not song.chordpro:
+        song.get_chordpro()
     file_path = song.chordpro.path
     with open(file_path, "r", encoding="utf-8") as f:
         chordpro = f.read()
