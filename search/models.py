@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 class Song(models.Model):
     title = models.CharField(max_length=64)
-    url = models.URLField()
+    url = models.URLField(max_length=2048, unique=True)
     source = models.ForeignKey("Source", on_delete=models.CASCADE, related_name="songs")
     chordpro = models.FileField(null=True, blank=True)
     main_version = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="versions")

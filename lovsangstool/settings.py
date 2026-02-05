@@ -34,7 +34,7 @@ WT_PASSWORD = os.getenv("WT_PASSWORD")
 SECRET_KEY = 'django-insecure-3_t#&_ic3olv$(ulp(d5)q$*g$sqkam1%fi@h&)o020z$+oh*p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = ["*"]
 
@@ -87,13 +87,21 @@ WSGI_APPLICATION = 'lovsangstool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://lovsang_db_user:3KlK1lbBJxsBThTqbUlUzBMvo2hNVVaI@dpg-d6255uhr0fns73f6g8bg-a/lovsang_db',
-        conn_max_age=600
-    )
-}
+if 'RENDER' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            # Replace this value with your local database's connection string.
+            default='postgresql://lovsang_db_user:3KlK1lbBJxsBThTqbUlUzBMvo2hNVVaI@dpg-d6255uhr0fns73f6g8bg-a/lovsang_db',
+            conn_max_age=600
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
