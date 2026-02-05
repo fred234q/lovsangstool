@@ -8,7 +8,7 @@ import os
 from bs4 import BeautifulSoup
 
 class Song(models.Model):
-    title = models.CharField(max_length=64)
+    title = models.CharField(max_length=128)
     url = models.URLField(max_length=2048, unique=True)
     source = models.ForeignKey("Source", on_delete=models.CASCADE, related_name="songs")
     chordpro = models.FileField(null=True, blank=True)
