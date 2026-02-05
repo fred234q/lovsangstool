@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'lovsangstool.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost:5432/lovsangstool',
+        default='postgresql://lovsang_db_user:3KlK1lbBJxsBThTqbUlUzBMvo2hNVVaI@dpg-d6255uhr0fns73f6g8bg-a/lovsang_db',
         conn_max_age=600
     )
 }
