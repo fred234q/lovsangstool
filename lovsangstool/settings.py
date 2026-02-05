@@ -34,7 +34,7 @@ WT_PASSWORD = os.getenv("WT_PASSWORD")
 SECRET_KEY = 'django-insecure-3_t#&_ic3olv$(ulp(d5)q$*g$sqkam1%fi@h&)o020z$+oh*p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
