@@ -6,6 +6,7 @@ from search.models import Song, Source
 from django.http import JsonResponse
 from thefuzz import fuzz
 from thefuzz import process
+import re
 
 # Variables
 SORTING_ALG = "process"
@@ -13,17 +14,23 @@ RESULT_COUNT = 10
 
 def song_score(song, query):
     q = query.lower()
+    title_score = fuzz.token_set_ratio(song.title.lower(), q)
 
     if song.chordpro:
         file_path = song.chordpro.path
         with open(file_path, "r", encoding="utf-8") as f:
-            chordpro = f.read()
+            lines = [line.strip() for line in f if line.strip()]
     else:
-        chordpro = ""
-    title_score = fuzz.WRatio(song.title.lower(), q)
-    lyric_score = fuzz.partial_ratio(chordpro.lower(), q)
+        lines = []
 
-    return int(0.6 * title_score + 0.4 * lyric_score)
+    # score best matching line
+    lyric_score = 0
+    for line in lines:
+        score = fuzz.token_set_ratio(line.lower(), q)
+        if score > lyric_score:
+            lyric_score = score
+
+    return int(0.7 * title_score + 0.3 * lyric_score)
 
 def index(request):
     return HttpResponseRedirect(reverse("search"))
@@ -73,7 +80,7 @@ def search_view(request):
         songs.reverse()
 
     # Request new songs if bad results
-    if song_score(songs[0], query) < 55:
+    if song_score(songs[0], query) < 40:
         get_songs(request, query)
 
         # Repeat songs retrieval
