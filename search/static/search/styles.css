@@ -105,3 +105,8 @@ ul {
 .lyrics {
     font-size: 1em;
 }
+
+/* Hide chords for now */
+.chords {
+    display: none;
+}
