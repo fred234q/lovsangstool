@@ -4,11 +4,9 @@ from search.search import metasearch, scrape_all
 from django.urls import reverse
 from search.models import Song, Source
 from thefuzz import fuzz
-from thefuzz import process
 import re
 
 # Variables
-SORTING_ALG = "process"
 RESULT_COUNT = 10
 
 def song_score(song, query):
@@ -67,16 +65,10 @@ def search_view(request):
         get_songs(request, query)
         songs = list(Song.objects.all())
     
-    if SORTING_ALG == "process":
-        songs.sort(
-            key=lambda song: song_score(song, query),
-            reverse=True
-        )
-
-    if SORTING_ALG == "partial_ratio":
-        # Sort songs by partial_ratio score
-        songs.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
-        songs.reverse()
+    songs.sort(
+        key=lambda song: song_score(song, query),
+        reverse=True
+    )
 
     # Request new songs if bad results
     if song_score(songs[0], query) < 40:
