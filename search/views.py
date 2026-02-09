@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from search.search import metasearch, scrape_all
 from django.urls import reverse
 from search.models import Song, Source
-from django.http import JsonResponse
 from thefuzz import fuzz
 from thefuzz import process
 import re
