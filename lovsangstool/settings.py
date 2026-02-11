@@ -34,7 +34,7 @@ WT_PASSWORD = os.getenv("WT_PASSWORD")
 SECRET_KEY = 'django-insecure-3_t#&_ic3olv$(ulp(d5)q$*g$sqkam1%fi@h&)o020z$+oh*p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -142,7 +142,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # This production code might break development mode, so we check whether we're in DEBUG mode
-if not DEBUG:
+if 'RENDER' in os.environ:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
