@@ -8,6 +8,7 @@ urlpatterns = [
     path("soeg/opdater", views.update_results_view, name="update_results"),
     path("soeg/hent-alle", views.get_all, name="get_all"),
     path("sang/<int:song_id>/merge", views.merge_songs, name="merge_songs"),
+    path("soeg/hent-alle-chordpro", views.get_all_chordpro, name="get_all_chordpro"),
 
     # API routes
     path("sang/<int:song_id>/chordpro", views.load_chordpro, name="load_chordpro"),

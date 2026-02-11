@@ -7,6 +7,25 @@ import requests
 import os
 from bs4 import BeautifulSoup
 
+username = settings.WT_USERNAME
+password = settings.WT_PASSWORD
+
+session = requests.Session()
+
+r = session.get("https://www.worshiptogether.com/membership/log-in/")
+
+soup = BeautifulSoup(r.text, "html.parser")
+ufprt = soup.find(class_="member_login").form.find_all("input")[-1]["value"]
+
+data = {
+    "loginModel.RedirectUrl": "/",
+    "loginModel.Username": username,
+    "loginModel.Password": password,
+    "ufprt": ufprt
+}
+
+session.post("https://www.worshiptogether.com/membership/log-in/", data=data)
+
 class Song(models.Model):
     title = models.CharField(max_length=64)
     url = models.URLField()
@@ -21,113 +40,99 @@ class Song(models.Model):
         return self.main_version == self or self.main_version == None
     
     def get_chordpro(self):
-        if self.chordpro:
-            return
-        
-        if self.source.name == "WorshipToday":
-            url_cutoff = len("https://worshiptoday.dk/lovsange/")
-            path = self.url[url_cutoff:len(self.url) - 1]
-            chordpro_url = f"https://worshiptoday.dk/lovsange/download/{path}.cho"
-
-            r = requests.get(chordpro_url)
-
-            filename = f"{path}.chordpro"
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write(r.text)
-
-            with open(filename, "r") as f:
-                self.chordpro.save(f"songs/{filename}", File(f))
-            os.remove(filename)
+        try:
+            if self.chordpro:
+                return
             
-            return
-        
-        if self.source.name == "lovsang.dk":
-            # Add headers needed to not get flagged
-            headers = {
-                "User-Agent": "Mozilla/5.0",
-            }   
+            if self.source.name == "WorshipToday":
+                url_cutoff = len("https://worshiptoday.dk/lovsange/")
+                path = self.url[url_cutoff:len(self.url) - 1]
+                chordpro_url = f"https://worshiptoday.dk/lovsange/download/{path}.cho"
 
-            r = requests.get(
-                self.url,
-                headers=headers
+                r = requests.get(chordpro_url)
+
+                filename = f"{path}.chordpro"
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(r.text)
+
+                with open(filename, "r") as f:
+                    self.chordpro.save(f"songs/{filename}", File(f))
+                os.remove(filename)
+                
+                return
+            
+            if self.source.name == "lovsang.dk":
+                # Add headers needed to not get flagged
+                headers = {
+                    "User-Agent": "Mozilla/5.0",
+                }   
+
+                r = requests.get(
+                    self.url,
+                    headers=headers
+                    )
+
+                # Get session cookie to retrive the right chordpro file
+                cookies = {"PHPSESSID": r.cookies["PHPSESSID"]}
+
+                r = requests.get(
+                    "https://lovsang.dk/song/download.php",
+                    headers=headers,
+                    cookies=cookies
+                    )
+                
+                # Manage encoding for æ, ø and å
+                r.encoding = "iso-8859-1"
+
+                # Find title from header
+                title_header = r.headers["Content-Disposition"]
+                title_start = title_header.find("\"") + 1
+                title = title_header[title_start:len(title_header) - 1]
+
+                filename = title
+                with open(filename, "w", encoding="utf-8") as f:
+                    # Add line break missing from lovsang.dk chordpro files
+                    f.write("\n" + r.text)
+
+                with open(filename, "r") as f:
+                    self.chordpro.save(f"songs/{filename}", File(f))
+                os.remove(filename)
+        
+            if self.source.name == "Worship Together":
+
+
+
+
+                r = session.get(self.url)
+
+                soup = BeautifulSoup(r.text, "html.parser")
+
+                chordpro_button = soup.find_all(class_="free-chords")
+                path = chordpro_button[-1]["href"]
+                chordpro_url = f"https://www.worshiptogether.com{path}"
+
+                if not username or not password or path == "#chordsDownload":
+                    print("Error: Login invalid.")
+                    return
+
+                r = session.get(
+                    chordpro_url
                 )
 
-            # Get session cookie to retrive the right chordpro file
-            cookies = {"PHPSESSID": r.cookies["PHPSESSID"]}
+                url_cutoff = len("https://www.worshiptogether.com/songs/")
+                name = self.url[url_cutoff:len(self.url) - 1]
 
-            r = requests.get(
-                "https://lovsang.dk/song/download.php",
-                headers=headers,
-                cookies=cookies
-                )
-            
-            # Manage encoding for æ, ø and å
-            r.encoding = "iso-8859-1"
+                filename = f"{name}.chordpro"
+                with open(filename, "w", encoding="utf-8") as f:
+                    f.write(r.text)
 
-            # Find title from header
-            title_header = r.headers["Content-Disposition"]
-            title_start = title_header.find("\"") + 1
-            title = title_header[title_start:len(title_header) - 1]
-
-            filename = title
-            with open(filename, "w", encoding="utf-8") as f:
-                # Add line break missing from lovsang.dk chordpro files
-                f.write("\n" + r.text)
-
-            with open(filename, "r") as f:
-                self.chordpro.save(f"songs/{filename}", File(f))
-            os.remove(filename)
-            
-            return
-        
-        if self.source.name == "Worship Together":
-            username = settings.WT_USERNAME
-            password = settings.WT_PASSWORD
-            print(username)
-
-            session = requests.Session()
-
-            r = session.get("https://www.worshiptogether.com/membership/log-in/")
-
-            soup = BeautifulSoup(r.text, "html.parser")
-            ufprt = soup.find(class_="member_login").form.find_all("input")[-1]["value"]
-
-            data = {
-                "loginModel.RedirectUrl": "/",
-                "loginModel.Username": username,
-                "loginModel.Password": password,
-                "ufprt": ufprt
-            }
-
-            session.post("https://www.worshiptogether.com/membership/log-in/", data=data)
-
-            r = session.get(self.url)
-
-            soup = BeautifulSoup(r.text, "html.parser")
-
-            chordpro_button = soup.find_all(class_="free-chords")
-            path = chordpro_button[-1]["href"]
-            chordpro_url = f"https://www.worshiptogether.com{path}"
-
-            if not username or not password or path == "#chordsDownload":
-                print("Error: Login invalid.")
+                with open(filename, "r") as f:
+                    self.chordpro.save(f"songs/{filename}", File(f))
+                os.remove(filename)
+                
                 return
 
-            r = session.get(
-                chordpro_url
-            )
-
-            url_cutoff = len("https://www.worshiptogether.com/songs/")
-            name = self.url[url_cutoff:len(self.url) - 1]
-
-            filename = f"{name}.chordpro"
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write(r.text)
-
-            with open(filename, "r") as f:
-                self.chordpro.save(f"songs/{filename}", File(f))
-            os.remove(filename)
-            
+        finally:
             return
 
 class Source(models.Model):
