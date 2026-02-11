@@ -7,7 +7,7 @@ from thefuzz import fuzz
 import re
 
 # Variables
-RESULT_COUNT = 10
+RESULT_COUNT = 30
 
 def song_score(song, query):
     q = query.lower()
@@ -101,20 +101,20 @@ def song_view(request, song_id):
     except:
         return HttpResponseRedirect(reverse("search"))
     
-    query = song.title
-    results = list(Song.objects.all())
+    # query = song.title
+    # results = list(Song.objects.all())
 
-    if SORTING_ALG == "process":
-        results = process.extract(query, results, limit=RESULT_COUNT)
-        results = [song[0] for song in results]
+    # if SORTING_ALG == "process":
+    #     results = process.extract(query, results, limit=RESULT_COUNT)
+    #     results = [song[0] for song in results]
 
-    if SORTING_ALG == "partial_ratio":
-        # Sort songs by partial_ratio score
-        results.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
-        results.reverse()
+    # if SORTING_ALG == "partial_ratio":
+    #     # Sort songs by partial_ratio score
+    #     results.sort(key=lambda song: fuzz.partial_ratio(song.title.lower(), query.lower()))
+    #     results.reverse()
 
-    # Adjust amount of search results
-    results = results[:RESULT_COUNT]
+    # # Adjust amount of search results
+    # results = results[:RESULT_COUNT]
     if not song.chordpro:
         song.get_chordpro()
     file_path = song.chordpro.path
@@ -126,7 +126,7 @@ def song_view(request, song_id):
     
     return render(request, "search/song.html", {
         "song": song,
-        "results": results,
+        # "results": results,
         "html": html
     })
 
@@ -154,6 +154,20 @@ def get_all(request):
     total_songs = Song.objects.count()
     print(f"New songs: {new_songs}")
     print(f"Total songs: {total_songs}")
+    return HttpResponseRedirect(reverse("index"))
+
+def get_all_chordpro(request):
+    songs = Song.objects.all()
+    counter = 0
+    for song in songs:
+        before = bool(song.chordpro)
+        song.get_chordpro()
+        if song.chordpro:
+            if not before:
+                print(f"ADDED: {song.title}")
+                counter += 1
+    print(f"{counter} songs added.")
+    
     return HttpResponseRedirect(reverse("index"))
 
 

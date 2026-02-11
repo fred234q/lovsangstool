@@ -31,6 +31,9 @@
             <form action="{% url 'get_all' %}">
                 <input type="submit" value="Hent alle sange (langsom)">
             </form>
+            <form action="{% url 'get_all_chordpro' %}">
+                <input type="submit" value="Hent alle sangtektser (langsom)">
+            </form>
         {% endif %}
     </div>
     <div id="lyrics"></div>
