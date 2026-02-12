@@ -1,9 +1,9 @@
 // import ChordSheetJS from './bundle.js';
-import * as ChordProjectParser from "https://cdn.jsdelivr.net/npm/chordproject-parser@1.0.4/+esm";
-document.addEventListener('DOMContentLoaded', () => {
-    const songId = document.querySelector('#lyrics-container').dataset.songId;
-    parse_song(songId);
-});
+// import * as ChordProjectParser from "https://cdn.jsdelivr.net/npm/chordproject-parser@1.0.4/+esm";
+// document.addEventListener('DOMContentLoaded', () => {
+//     const songId = document.querySelector('#lyrics-container').dataset.songId;
+//     parse_song(songId);
+// });
 
 // Get new search results via metasearch in Python
 // const queryString = window.location.search;

@@ -110,3 +110,25 @@ ul {
 .chords {
     display: none;
 }
+
+.song-meta-container {
+    display: none;
+}
+
+.comment {
+    font-weight: bold;
+}
+
+/* Mobile: screens ~600px wide or less */
+@media screen and (max-width: 37.5em) {
+    .body {
+        width: 95%;     /* nearly full width on phone */
+        margin: 1em auto;
+        text-align: center;
+    }
+
+    .song-content {
+        column-count: 1; /* one column of lyrics */
+        column-gap: 0;   /* no gap needed */
+    }
+}
