@@ -18,10 +18,16 @@ def song_score(song, query):
         file_path = song.chordpro.path
         if not os.path.exists(file_path):
             song.get_chordpro()
-            # lines = []  # prevent crash
+            file_path = song.chordpro.path
             
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = [line.strip() for line in f if line.strip()]
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = [line.strip() for line in f if line.strip()]
+
+        # Prevent crashing on missing file - imperfect!
+        except FileNotFoundError:
+            lines = []
+            print(f"Missing song: {song.title} from path {song.chordpro.path}")
     else:
         lines = []
 
