@@ -41,7 +41,7 @@ class Song(models.Model):
     
     def get_chordpro(self):
         try:
-            if self.chordpro:
+            if self.chordpro and os.path.exists(self.chordpro.path):
                 return
             
             if self.source.name == "WorshipToday":

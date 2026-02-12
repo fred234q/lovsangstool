@@ -5,6 +5,7 @@ from django.urls import reverse
 from search.models import Song, Source
 from thefuzz import fuzz
 import re
+import os
 
 # Variables
 RESULT_COUNT = 30
@@ -15,6 +16,10 @@ def song_score(song, query):
 
     if song.chordpro:
         file_path = song.chordpro.path
+        if not os.path.exists(file_path):
+            song.get_chordpro()
+            # lines = []  # prevent crash
+            
         with open(file_path, "r", encoding="utf-8") as f:
             lines = [line.strip() for line in f if line.strip()]
     else:
